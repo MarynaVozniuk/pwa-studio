@@ -11,9 +11,9 @@ const {
     envToConfig
 } = require('@magento/upward-js');
 
-const projectEnv = configureEnvironment(process.env, __dirname);
-
 async function serve() {
+    const projectEnv = await configureEnvironment(process.env, __dirname);
+
     const config = Object.assign(
         {
             bindLocal: true,
@@ -57,7 +57,8 @@ async function serve() {
                 interactive: false,
                 subdomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_SUBDOMAIN,
                 exactDomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_EXACT_DOMAIN,
-                addUniqueHash: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_EXACT_DOMAIN
+                addUniqueHash:
+                    projectEnv.DEV_SERVER_CUSTOM_ORIGIN_ADD_UNIQUE_HASH
             });
             config.host = hostname;
             config.https = ssl;

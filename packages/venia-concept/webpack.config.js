@@ -134,7 +134,7 @@ module.exports = async function(env) {
                     // special case of debugging the service worker itself.
                     SERVICE_WORKER: JSON.stringify(
                         mode === 'production' || enableServiceWorkerDebugging
-                            ? SW_FILENAME
+                            ? 'sw.js'
                             : false
                     ),
                     CHECKOUT_BRAINTREE_TOKEN: JSON.stringify(braintreeToken)
