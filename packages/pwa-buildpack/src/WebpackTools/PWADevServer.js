@@ -51,12 +51,12 @@ const PWADevServer = {
                 // polling is CPU intensive - provide the option to turn it on if needed
                 poll:
                     !!parseInt(
-                        process.env.PWA_STUDIO_HOT_RELOAD_WITH_POLLING
+                        process.env.DEV_SERVER_WATCH_OPTIONS_USE_POLLING
                     ) || false
             },
             host: '0.0.0.0',
             port:
-                process.env.PWA_STUDIO_PORTS_DEVELOPMENT ||
+                process.env.DEV_SERVER_PORT ||
                 (await portscanner.findAPortNotInUse(10000)),
             stats: {
                 all: !process.env.NODE_DEBUG ? false : undefined,
@@ -157,7 +157,7 @@ be configured to have the same effect as 'id'.
             };
 
             const requestedPort =
-                process.env.PWA_STUDIO_PORTS_DEVELOPMENT || ports.development;
+                process.env.DEV_SERVER_PORT || ports.development;
             if (
                 (await portscanner.checkPortStatus(requestedPort)) === 'closed'
             ) {

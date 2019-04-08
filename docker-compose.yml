@@ -43,6 +43,6 @@ services:
     environment:
       # environment variables consumed by the nginx-proxy service
       VIRTUAL_HOST: ${PWA_STUDIO_PUBLIC_PATH}
-      VIRTUAL_PORT: ${PWA_STUDIO_PORTS_DEVELOPMENT}
+      VIRTUAL_PORT: ${DEV_SERVER_PORT}
     expose:
-      - ${PWA_STUDIO_PORTS_DEVELOPMENT}
+      - ${DEV_SERVER_PORT}

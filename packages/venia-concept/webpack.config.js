@@ -1,7 +1,6 @@
-const validEnv = require('./validate-environment')(process.env);
-
 const webpack = require('webpack');
 const {
+    Utilities: { configureEnvironment },
     WebpackTools: {
         makeMagentoRootComponentsPlugin,
         ServiceWorkerPlugin,
@@ -14,6 +13,8 @@ const path = require('path');
 
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
+
+const projectEnv = configureEnvironment(process.env, __dirname);
 
 const themePaths = {
     images: path.resolve(__dirname, 'images'),
@@ -45,10 +46,9 @@ module.exports = async function(env) {
     const mode = (env && env.mode) || process.env.NODE_ENV || 'development';
 
     const enableServiceWorkerDebugging =
-        validEnv.ENABLE_SERVICE_WORKER_DEBUGGING;
+        projectEnv.DEV_SERVER_SERVICE_WORKER_ENABLED;
 
-    const serviceWorkerFileName = validEnv.SERVICE_WORKER_FILE_NAME;
-    const braintreeToken = validEnv.BRAINTREE_TOKEN;
+    const braintreeToken = projectEnv.CHECKOUT_BRAINTREE_TOKEN;
 
     const config = {
         mode,
@@ -124,7 +124,7 @@ module.exports = async function(env) {
                 rootComponentsDirs,
                 context: __dirname
             }),
-            new webpack.EnvironmentPlugin(validEnv),
+            new webpack.EnvironmentPlugin(projectEnv),
             new webpack.DefinePlugin({
                 'process.env': {
                     NODE_ENV: JSON.stringify(mode),
@@ -134,10 +134,10 @@ module.exports = async function(env) {
                     // special case of debugging the service worker itself.
                     SERVICE_WORKER: JSON.stringify(
                         mode === 'production' || enableServiceWorkerDebugging
-                            ? serviceWorkerFileName
+                            ? SW_FILENAME
                             : false
                     ),
-                    BRAINTREE_TOKEN: JSON.stringify(braintreeToken)
+                    CHECKOUT_BRAINTREE_TOKEN: JSON.stringify(braintreeToken)
                 }
             }),
             new ServiceWorkerPlugin({
@@ -191,19 +191,18 @@ module.exports = async function(env) {
     if (mode === 'development') {
         config.devtool = 'eval-source-map';
         const devServerConfig = {
-            env: validEnv,
+            env: projectEnv,
             publicPath: config.output.publicPath,
             graphqlPlayground: {
                 queryDirs: [path.resolve(themePaths.src, 'queries')]
             }
         };
-        const provideHost = !!validEnv.MAGENTO_BUILDPACK_PROVIDE_SECURE_HOST;
+        const provideHost = !!projectEnv.DEV_SERVER_CUSTOM_ORIGIN_ENABLED;
         if (provideHost) {
             devServerConfig.provideSecureHost = {
-                subdomain: validEnv.MAGENTO_BUILDPACK_SECURE_HOST_SUBDOMAIN,
-                exactDomain:
-                    validEnv.MAGENTO_BUILDPACK_SECURE_HOST_EXACT_DOMAIN,
-                addUniqueHash: !!validEnv.MAGENTO_BUILDPACK_SECURE_HOST_ADD_UNIQUE_HASH
+                subdomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_SUBDOMAIN,
+                exactDomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_EXACT_DOMAIN,
+                addUniqueHash: !!projectEnv.DEV_SERVER_CUSTOM_ORIGIN_EXACT_DOMAIN
             };
         }
         config.devServer = await PWADevServer.configure(devServerConfig);
@@ -217,8 +216,8 @@ module.exports = async function(env) {
             new webpack.HotModuleReplacementPlugin(),
             new UpwardPlugin(
                 config.devServer,
-                validEnv,
-                path.resolve(__dirname, validEnv.UPWARD_JS_UPWARD_PATH)
+                projectEnv,
+                path.resolve(__dirname, projectEnv.UPWARD_JS_UPWARD_PATH)
             )
         );
     } else if (mode === 'production') {

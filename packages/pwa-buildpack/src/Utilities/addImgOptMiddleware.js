@@ -19,10 +19,10 @@ try {
 function addImgOptMiddleware(app, env = process.env) {
     const imgOptConfig = {
         baseHost: env.MAGENTO_BACKEND_URL,
-        mountPoint: env.IMAGE_SERVICE_PATH,
-        cacheExpires: env.IMAGE_CACHE_EXPIRES,
-        debugCache: env.IMAGE_CACHE_DEBUG,
-        redis: env.IMAGE_CACHE_REDIS_CLIENT
+        mountPoint: env.IMAGE_SERVICE_PUBLIC_PATH,
+        cacheExpires: env.IMAGE_SERVICE_CACHE_EXPIRES,
+        debugCache: env.IMAGE_SERVICE_CACHE_DEBUG,
+        redis: env.IMAGE_SERVICE_CACHE_REDIS_CLIENT
     };
     debug(
         `mounting onboard image optimization middleware express-sharp with config %o`,

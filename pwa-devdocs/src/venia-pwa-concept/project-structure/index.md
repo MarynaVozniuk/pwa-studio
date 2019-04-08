@@ -24,13 +24,7 @@ In addition to the NPM packages.json and Venia specific validation and testing f
   Copy and execute this file in a Magento instance to install the sample data.
 
 [`server.js`][]
-: A node script that runs the UPWARD staging server when the `yarn run stage:venia` command is used.
-
-[`validate-environment.js`][]
-: A node script that validates the `.env` environment file.
-
-[`validate-queries.js`][]
-: validates that all `.graphql` query files in the project are valid for the GraphQL schema of the Magento backend instance specified in `.env`.
+: A node script that runs the UPWARD staging server when the `yarn run stage:venia`
 
 [`venia-upward.yml`][]
 : The [UPWARD server specification][] for the Venia PWA storefront.
@@ -175,9 +169,7 @@ The `src/sw.js` file contains the service worker configuration.
 [`.env.dist`]: https://github.com/magento-research/pwa-studio/blob/master/packages/venia-concept/.env.dist
 [`deployVeniaSampleData.sh`]: https://github.com/magento-research/pwa-studio/blob/master/packages/venia-concept/deployVeniaSampleData.sh
 [`server.js`]: https://github.com/magento-research/pwa-studio/blob/master/packages/venia-concept/server.js
-[`validate-environment.js`]: https://github.com/magento-research/pwa-studio/blob/master/packages/venia-concept/validate-environment.js
 [`venia-concept`]: https://github.com/magento-research/pwa-studio/tree/master/packages/venia-concept
-[`validate-queries.js`]: https://github.com/magento-research/pwa-studio/blob/master/packages/venia-concept/validate-queries.js 
 [`venia-upward.yml`]: https://github.com/magento-research/pwa-studio/blob/master/packages/venia-concept/venia-upward.yml
 [`templates`]: https://github.com/magento-research/pwa-studio/tree/master/packages/venia-concept/templates
 [`static`]: https://github.com/magento-research/pwa-studio/tree/master/packages/venia-concept/static
