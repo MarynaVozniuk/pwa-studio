@@ -14,8 +14,6 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 
-const projectEnv = configureEnvironment(process.env, __dirname);
-
 const themePaths = {
     images: path.resolve(__dirname, 'images'),
     templates: path.resolve(__dirname, 'templates'),
@@ -44,6 +42,8 @@ const libs = [
 
 module.exports = async function(env) {
     const mode = (env && env.mode) || process.env.NODE_ENV || 'development';
+
+    const projectEnv = await configureEnvironment(process.env, __dirname);
 
     const enableServiceWorkerDebugging =
         projectEnv.DEV_SERVER_SERVICE_WORKER_ENABLED;
@@ -143,7 +143,6 @@ module.exports = async function(env) {
             new ServiceWorkerPlugin({
                 env: { mode },
                 enableServiceWorkerDebugging,
-                serviceWorkerFileName,
                 paths: themePaths,
                 injectManifest: true,
                 injectManifestConfig: {
@@ -202,7 +201,8 @@ module.exports = async function(env) {
             devServerConfig.provideSecureHost = {
                 subdomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_SUBDOMAIN,
                 exactDomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_EXACT_DOMAIN,
-                addUniqueHash: !!projectEnv.DEV_SERVER_CUSTOM_ORIGIN_EXACT_DOMAIN
+                addUniqueHash:
+                    projectEnv.DEV_SERVER_CUSTOM_ORIGIN_ADD_UNIQUE_HASH
             };
         }
         config.devServer = await PWADevServer.configure(devServerConfig);

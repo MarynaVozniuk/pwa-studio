@@ -13,8 +13,7 @@ test('throws if options are missing', () => {
     expect(
         () =>
             new ServiceWorkerPlugin({
-                env: { mode: 'development' },
-                serviceWorkerFileName: 'file.name'
+                env: { mode: 'development' }
             })
     ).toThrow('paths.output must be of type string');
 });
@@ -25,7 +24,6 @@ test('returns a valid Webpack plugin', () => {
             env: {
                 mode: 'development'
             },
-            serviceWorkerFileName: 'sw.js',
             runtimeCacheAssetPath: 'https://location/of/assets',
             paths: {
                 output: 'path/to/assets'
@@ -39,7 +37,6 @@ test('.apply calls WorkboxPlugin.GenerateSW in prod', () => {
         env: {
             mode: 'production'
         },
-        serviceWorkerFileName: 'sw.js',
         runtimeCacheAssetPath: 'https://location/of/assets',
         paths: {
             output: 'path/to/assets'
@@ -69,7 +66,6 @@ test('.apply calls nothing but warns in console in dev', () => {
         env: {
             mode: 'development'
         },
-        serviceWorkerFileName: 'sw.js',
         runtimeCacheAssetPath: 'https://location/of/assets',
         paths: {
             output: 'path/to/assets'
@@ -97,7 +93,6 @@ test('.apply generates and writes out a serviceworker when enableServiceWorkerDe
             mode: 'development'
         },
         enableServiceWorkerDebugging: true,
-        serviceWorkerFileName: 'sw.js',
         runtimeCacheAssetPath: 'https://location/of/assets',
         paths: {
             output: 'path/to/assets'
@@ -145,7 +140,6 @@ test('.apply uses `InjectManifest` when `injectManifest` is `true`', () => {
             mode: 'development'
         },
         enableServiceWorkerDebugging: true,
-        serviceWorkerFileName: 'sw.js',
         injectManifest: true,
         paths: {
             output: 'path/to/assets'

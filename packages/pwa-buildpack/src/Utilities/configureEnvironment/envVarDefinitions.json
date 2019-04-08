@@ -85,7 +85,7 @@
                     "name": "UPWARD_JS_UPWARD_PATH",
                     "type": "str",
                     "desc": "UPWARD configuration file to use for the PWADevServer and the \"stage:venia\" sample server.",
-                    "default": "upward.yml"
+                    "default": "venia-upward.yml"
                 },
                 {
                     "name": "UPWARD_JS_BIND_LOCAL",
@@ -206,7 +206,7 @@
         {
             "name": "SERVICE_WORKER_FILE_NAME",
             "type": "removed",
-            "reason": "using the standard filename 'sw.js' is better for caching, stability, and compatibility, and a PWA Studio project should not register more than one ServiceWorker"
+            "reason": "the standard filename 'sw.js' is better for caching, stability, and compatibility, and a PWA Studio project should not register more than one ServiceWorker"
         }
     ]
 }

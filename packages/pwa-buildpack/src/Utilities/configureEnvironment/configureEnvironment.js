@@ -1,10 +1,11 @@
-const debug = require('../../util/debug').makeFileLogger(__filename);
+const debug = require('../../util/debug').makeFileLogger(__dirname);
 const { inspect, promisify } = require('util');
 const fs = require('fs');
 const readFile = promisify(fs.readFile);
 const path = require('path');
 const dotenv = require('dotenv');
 const envalid = require('envalid');
+const { pick } = require('lodash');
 // const hogan = require('hogan.js');
 
 const buildpackVersion = require('../../../package.json').version;
@@ -25,18 +26,17 @@ async function configureEnvironment(env, dir, log = console) {
             });
         }
     }
-
     await assertDevEnvFile(dir, log);
 
-    await notifyChanges(env, log);
+    const compatEnv = await applyBackwardsCompatChanges(env, log);
 
-    const projectConfig = envalid.cleanEnv(env, validation);
-    // Extra conditional so we don't do the debug output formatting unless we
-    // need to because it will display
+    const projectConfig = envalid.cleanEnv(compatEnv, validation);
     if (debug.enabled) {
+        // Only do this prettiness if we gotta
         debug(
+            'Current known env',
             '\n  ' +
-                inspect(projectConfig, {
+                inspect(pick(projectConfig, Object.keys(validation)), {
                     colors: true,
                     compact: false
                 })
@@ -45,6 +45,7 @@ async function configureEnvironment(env, dir, log = console) {
                 '\n'
         );
     }
+    return projectConfig;
 }
 
 async function assertDevEnvFile(dir, log) {
@@ -54,7 +55,7 @@ async function assertDevEnvFile(dir, log) {
         // don't use console.log, which writes to stdout. writing to stdout
         // interferes with webpack json output
         log.info('Using environment variables from env');
-        debug('Env vars from .env: %J', parsedEnv);
+        debug('Env vars from .env:', parsedEnv);
     } catch (e) {
         if (e.code === 'ENOENT') {
             log.warn(
@@ -67,7 +68,8 @@ async function assertDevEnvFile(dir, log) {
     }
 }
 
-function notifyChanges(env, log) {
+function applyBackwardsCompatChanges(env, log) {
+    const mappedLegacyValues = {};
     for (const change of sortedChanges) {
         // the env isn't using the var with changes, no need to log
         const isSet = env.hasOwnProperty(change.name);
@@ -117,7 +119,8 @@ function notifyChanges(env, log) {
                             log.warn(
                                 'The old variable will continue to work for the next several versions, but migrate it as soon as possible.'
                             );
-                            env[change.update] = env[change.name];
+                            mappedLegacyValues[change.update] =
+                                env[change.name];
                         }
                     } else {
                         log.warn(
@@ -134,6 +137,7 @@ function notifyChanges(env, log) {
                 );
         }
     }
+    return Object.assign({}, env, mappedLegacyValues);
 }
 
 module.exports = configureEnvironment;
