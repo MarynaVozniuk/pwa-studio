@@ -5,6 +5,7 @@ const readFile = promisify(fs.readFile);
 const path = require('path');
 const dotenv = require('dotenv');
 const envalid = require('envalid');
+const camelspace = require('camelspace');
 const { pick } = require('lodash');
 // const hogan = require('hogan.js');
 
@@ -139,5 +140,7 @@ function applyBackwardsCompatChanges(env, log) {
     }
     return Object.assign({}, env, mappedLegacyValues);
 }
+
+configureEnvironment.forSection = camelspace;
 
 module.exports = configureEnvironment;

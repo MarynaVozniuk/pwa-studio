@@ -44,11 +44,15 @@ module.exports = async function(env) {
     const mode = (env && env.mode) || process.env.NODE_ENV || 'development';
 
     const projectEnv = await configureEnvironment(process.env, __dirname);
+    const getDevServerConfig = configureEnvironment.forSection('devServer');
 
-    const enableServiceWorkerDebugging =
-        projectEnv.DEV_SERVER_SERVICE_WORKER_ENABLED;
+    const serviceWorkerConfig = getDevServerConfig('serviceWorker');
+    const enableServiceWorkerDebugging = serviceWorkerConfig.fromEnv(projectEnv)
+        .enabled;
 
-    const braintreeToken = projectEnv.CHECKOUT_BRAINTREE_TOKEN;
+    const { braintreeToken } = configureEnvironment
+        .forSection('checkout')
+        .fromEnv(projectEnv);
 
     const config = {
         mode,
@@ -196,14 +200,12 @@ module.exports = async function(env) {
                 queryDirs: [path.resolve(themePaths.src, 'queries')]
             }
         };
-        const provideHost = !!projectEnv.DEV_SERVER_CUSTOM_ORIGIN_ENABLED;
+        const customOrigin = configureEnvironment
+            .forSection('devServerCustomOrigin')
+            .fromEnv(projectEnv);
+        const provideHost = !!customOrigin.enabled;
         if (provideHost) {
-            devServerConfig.provideSecureHost = {
-                subdomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_SUBDOMAIN,
-                exactDomain: projectEnv.DEV_SERVER_CUSTOM_ORIGIN_EXACT_DOMAIN,
-                addUniqueHash:
-                    projectEnv.DEV_SERVER_CUSTOM_ORIGIN_ADD_UNIQUE_HASH
-            };
+            devServerConfig.provideSecureHost = customOrigin;
         }
         config.devServer = await PWADevServer.configure(devServerConfig);
 
